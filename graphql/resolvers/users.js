@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
 const { SECRET_KEY } = require("../../config");
+const { validateRegisterInput } = require("../../utils/validators");
 const errorCodes = require("./error");
 module.exports = {
   Mutation: {
@@ -10,10 +11,14 @@ module.exports = {
       _,
       { registerInput: { username, email, password, confirmPassword } }
     ) => {
-      if (password !== confirmPassword) {
-        throw new UserInputError(errorCodes.PASSWORD_DOEST_NOT_MATCH, {
-          invalidArgs: password,
-        });
+      const { errors, valid } = validateRegisterInput(
+        username,
+        email,
+        password,
+        confirmPassword
+      );
+      if (!valid) {
+        throw new UserInputError(errorCodes.BAD_USER_INPUT, { errors });
       }
       try {
         const existingUser = await User.findOne({ username });
@@ -23,7 +28,7 @@ module.exports = {
             existingUser
           );
           throw new UserInputError(errorCodes.USER_ALREADY_EXISTS, {
-            invalidArgs: username,
+            username: errorCodes.USER_ALREADY_EXISTS,
           });
         }
 
