@@ -1,7 +1,7 @@
 const { UserInputError, ApolloError } = require("apollo-server");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
-
+const { validateToken } = require("../../utils/jwt");
 const {
   validateRegisterInput,
   validateLoginInput,
@@ -10,23 +10,22 @@ const { generateToken } = require("../../utils/jwt");
 const errorCodes = require("./error");
 module.exports = {
   Query: {
-    Users: async (_, { id }) => {
+    Users: async (_, { id }, context) => {
+      validateToken(context);
       let users;
       try {
         if (id) {
           users = [await User.findById(id).exec()].filter(Boolean);
           if (users.length === 0) {
-            throw new ApolloError(errorCodes.USER_NOT_FOUND);
+            return
           }
         } else {
           users = await User.find();
         }
         return users.map((user) => {
-          const token = generateToken(user);
           return {
             ...user._doc,
             id: user._id,
-            token,
           };
         });
       } catch (err) {
@@ -65,12 +64,9 @@ module.exports = {
           createdAt: new Date().toISOString(),
         });
         const user = await newUser.save();
-
-        const token = generateToken(user);
         return {
           ...user._doc,
           id: user._id,
-          token,
         };
       } catch (error) {
         throw new ApolloError(error);
@@ -93,12 +89,7 @@ module.exports = {
             password: errorCodes.INVALID_PASSWORD,
           });
         }
-        const token = generateToken(existingUser);
-        return {
-          ...existingUser._doc,
-          id: existingUser._id,
-          token,
-        };
+        return generateToken(existingUser);
       } catch (error) {
         console.log("🚀 ~ file: users.js ~ line 99 ~ login: ~ error", error);
         throw new ApolloError(error);

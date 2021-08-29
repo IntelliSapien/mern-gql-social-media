@@ -1,24 +1,29 @@
 const { ApolloError } = require("apollo-server");
 const Post = require("../../models/Post");
+const User = require("../../models/User");
 const errorCodes = require("./error");
 const { validateToken } = require("../../utils/jwt");
 module.exports = {
   Query: {
-    Posts: async (_, { id }) => {
+    Posts: async (_, { id }, context) => {
+      validateToken(context);
       let posts;
       try {
-        if (id) {
-          posts = [await Post.findById(id)].filter(Boolean);
+        if (id && id.match(/^[0-9a-fA-F]{24}$/) !== null) {
+          posts = [await Post.findOne({ _id: id })].filter(Boolean);
           if (posts.length === 0) {
             throw new ApolloError(errorCodes.POST_NOT_FOUND);
           }
         } else {
           posts = await Post.find();
         }
-        return posts.map((post) => {
+        return posts.map(async (post) => {
+          const user = await User.findById(post.user).exec();
+
           return {
             ...post._doc,
             id: post._id,
+            user,
           };
         });
       } catch (err) {
@@ -42,13 +47,15 @@ module.exports = {
         return {
           ...post._doc,
           id: post._id,
+          user,
         };
       } catch (err) {
         console.error("🚀 ~ file: posts.js ~ line 40 ~ createPost: ~ err", err);
         throw new ApolloError(err);
       }
     },
-    deletePost: async (_, { id }) => {
+    deletePost: async (_, { id }, context) => {
+      const user = validateToken(context);
       try {
         await Post.findByIdAndDelete(id);
         return true;

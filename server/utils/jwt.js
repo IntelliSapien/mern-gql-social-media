@@ -16,17 +16,17 @@ module.exports.generateToken = function (user) {
 
 module.exports.validateToken = (context) => {
   const authHeader = context.req.headers.authorization || "";
-  console.log("🚀 ~ file: jwt.js ~ line 19 ~ authHeader", authHeader);
+
   if (authHeader) {
     const token = authHeader.split(" ")[1];
-    console.log("🚀 ~ file: jwt.js ~ line 22 ~ token", token);
+
     if (token) {
       try {
         const user = jwt.verify(token, SECRET_KEY);
-        console.log("🚀 ~ file: jwt.js ~ line 26 ~ user", user);
+
         return user;
       } catch (err) {
-        console.error("🚀 ~ file: jwt.js ~ line 29 ~ err", err)
+        console.error("🚀 ~ file: jwt.js ~ line 29 ~ err", err);
         throw new AuthenticationError(errorCodes.INVALID_TOKEN);
       }
     }
