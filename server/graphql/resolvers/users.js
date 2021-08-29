@@ -1,6 +1,5 @@
 const { UserInputError, ApolloError } = require("apollo-server");
 const bcrypt = require("bcryptjs");
-
 const User = require("../../models/User");
 
 const {
@@ -10,6 +9,32 @@ const {
 const { generateToken } = require("../../utils/jwt");
 const errorCodes = require("./error");
 module.exports = {
+  Query: {
+    Users: async (_, { id }) => {
+      let users;
+      try {
+        if (id) {
+          users = [await User.findById(id).exec()].filter(Boolean);
+          if (users.length === 0) {
+            throw new ApolloError(errorCodes.USER_NOT_FOUND);
+          }
+        } else {
+          users = await User.find();
+        }
+        return users.map((user) => {
+          const token = generateToken(user);
+          return {
+            ...user._doc,
+            id: user._id,
+            token,
+          };
+        });
+      } catch (err) {
+        console.error("🚀 ~ file: users.js ~ line 29 ~ Users: ~ err", err);
+        throw new ApolloError(err);
+      }
+    },
+  },
   Mutation: {
     register: async (
       _,
@@ -75,6 +100,7 @@ module.exports = {
           token,
         };
       } catch (error) {
+        console.log("🚀 ~ file: users.js ~ line 99 ~ login: ~ error", error);
         throw new ApolloError(error);
       }
     },
