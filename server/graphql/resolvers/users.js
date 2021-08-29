@@ -1,5 +1,6 @@
 const { UserInputError, ApolloError } = require("apollo-server");
 const bcrypt = require("bcryptjs");
+const mongoose = require("mongoose");
 const User = require("../../models/User");
 const { validateToken } = require("../../utils/jwt");
 const {
@@ -14,10 +15,10 @@ module.exports = {
       validateToken(context);
       let users;
       try {
-        if (id) {
+        if (id && mongoose.Types.ObjectId.isValid(id)) {
           users = [await User.findById(id).exec()].filter(Boolean);
           if (users.length === 0) {
-            return
+            throw new ApolloError(errorCodes.USER_NOT_FOUND);
           }
         } else {
           users = await User.find();

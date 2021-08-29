@@ -2,6 +2,7 @@ const { ApolloError } = require("apollo-server");
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 const errorCodes = require("./error");
+const mongoose = require("mongoose");
 const { validateToken } = require("../../utils/jwt");
 module.exports = {
   Query: {
@@ -9,7 +10,7 @@ module.exports = {
       validateToken(context);
       let posts;
       try {
-        if (id && id.match(/^[0-9a-fA-F]{24}$/) !== null) {
+        if (id && mongoose.Types.ObjectId.isValid(id)) {
           posts = [await Post.findOne({ _id: id })].filter(Boolean);
           if (posts.length === 0) {
             throw new ApolloError(errorCodes.POST_NOT_FOUND);
