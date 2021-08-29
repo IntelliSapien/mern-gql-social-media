@@ -3,7 +3,10 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
 const { SECRET_KEY } = require("../../config");
-const { validateRegisterInput } = require("../../utils/validators");
+const {
+  validateRegisterInput,
+  validateLoginInput,
+} = require("../../utils/validators");
 const errorCodes = require("./error");
 module.exports = {
   Mutation: {
@@ -23,10 +26,6 @@ module.exports = {
       try {
         const existingUser = await User.findOne({ username });
         if (existingUser) {
-          console.log(
-            "🚀 ~ file: users.js ~ line 19 ~ existingUser",
-            existingUser
-          );
           throw new UserInputError(errorCodes.USER_ALREADY_EXISTS, {
             username: errorCodes.USER_ALREADY_EXISTS,
           });
@@ -40,7 +39,7 @@ module.exports = {
           createdAt: new Date().toISOString(),
         });
         const user = await newUser.save();
-        console.log("🚀 ~ file: users.js ~ line 29 ~ user", user);
+
         const token = jwt.sign(
           {
             id: user.id,
@@ -53,6 +52,41 @@ module.exports = {
         return {
           ...user._doc,
           id: user._id,
+          token,
+        };
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+    login: async (_, { loginInput: { username, password } }) => {
+      const { errors, valid } = validateLoginInput(username, password);
+      if (!valid) {
+        throw new UserInputError(errorCodes.BAD_USER_INPUT, { errors });
+      }
+      try {
+        const existingUser = await User.findOne({ username });
+        if (!existingUser || existingUser.length === 0) {
+          throw new UserInputError(errorCodes.USER_NOT_FOUND, {
+            username: errorCodes.USER_NOT_FOUND,
+          });
+        }
+        if (!(await bcrypt.compareSync(password, existingUser.password))) {
+          throw new UserInputError(errorCodes.INVALID_PASSWORD, {
+            password: errorCodes.INVALID_PASSWORD,
+          });
+        }
+        const token = jwt.sign(
+          {
+            id: existingUser.id,
+            email: existingUser.email,
+            username: username,
+          },
+          SECRET_KEY,
+          { expiresIn: "1h" }
+        );
+        return {
+          ...existingUser._doc,
+          id: existingUser._id,
           token,
         };
       } catch (error) {
