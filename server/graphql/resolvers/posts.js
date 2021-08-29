@@ -57,7 +57,7 @@ module.exports = {
       }
     },
     deletePost: async (_, { id }, context) => {
-      const user = validateToken(context);
+      validateToken(context);
       try {
         await Post.findByIdAndDelete(id);
         return true;
