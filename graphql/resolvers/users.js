@@ -70,7 +70,7 @@ module.exports = {
             username: errorCodes.USER_NOT_FOUND,
           });
         }
-        if (!(await bcrypt.compareSync(password, existingUser.password))) {
+        if (!(await bcrypt.compare(password, existingUser.password))) {
           throw new UserInputError(errorCodes.INVALID_PASSWORD, {
             password: errorCodes.INVALID_PASSWORD,
           });
