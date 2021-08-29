@@ -21,7 +21,7 @@ module.exports = {
             throw new ApolloError(errorCodes.USER_NOT_FOUND);
           }
         } else {
-          users = await User.find();
+          users = await User.find().sort({ createdAt: -1 }).exec();
         }
         return users.map((user) => {
           return {

@@ -16,7 +16,7 @@ module.exports = {
             throw new ApolloError(errorCodes.POST_NOT_FOUND);
           }
         } else {
-          posts = await Post.find();
+          posts = await Post.find().sort({ createdAt: -1 });
         }
         return posts.map(async (post) => {
           const user = await User.findById(post.user).exec();
@@ -39,6 +39,7 @@ module.exports = {
       console.log("🚀 ~ file: posts.js ~ line 33 ~ createPost: ~ user", user);
       let post;
       try {
+        const userCreatingThePost = await User.findById(user.id).exec();
         post = await new Post({
           body,
           createdAt: new Date().toISOString(),
@@ -48,7 +49,7 @@ module.exports = {
         return {
           ...post._doc,
           id: post._id,
-          user,
+          user: userCreatingThePost,
         };
       } catch (err) {
         console.error("🚀 ~ file: posts.js ~ line 40 ~ createPost: ~ err", err);
