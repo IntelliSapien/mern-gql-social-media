@@ -57,8 +57,12 @@ module.exports = {
       }
     },
     deletePost: async (_, { id }, context) => {
-      validateToken(context);
+      const user = validateToken(context);
       try {
+        const post = await Post.findById(id).exec();
+        if (post._doc.username !== user.username) {
+          return false;
+        }
         await Post.findByIdAndDelete(id);
         return true;
       } catch (err) {
