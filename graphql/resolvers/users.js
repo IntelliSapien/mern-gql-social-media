@@ -1,12 +1,13 @@
 const { UserInputError, ApolloError } = require("apollo-server");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+
 const User = require("../../models/User");
-const { SECRET_KEY } = require("../../config");
+
 const {
   validateRegisterInput,
   validateLoginInput,
 } = require("../../utils/validators");
+const { generateToken } = require("../../utils/jwt");
 const errorCodes = require("./error");
 module.exports = {
   Mutation: {
@@ -40,15 +41,7 @@ module.exports = {
         });
         const user = await newUser.save();
 
-        const token = jwt.sign(
-          {
-            id: user.id,
-            email: user.email,
-            username: user.username,
-          },
-          SECRET_KEY,
-          { expiresIn: "1h" }
-        );
+        const token = generateToken(user);
         return {
           ...user._doc,
           id: user._id,
@@ -75,15 +68,7 @@ module.exports = {
             password: errorCodes.INVALID_PASSWORD,
           });
         }
-        const token = jwt.sign(
-          {
-            id: existingUser.id,
-            email: existingUser.email,
-            username: username,
-          },
-          SECRET_KEY,
-          { expiresIn: "1h" }
-        );
+        const token = generateToken(existingUser);
         return {
           ...existingUser._doc,
           id: existingUser._id,
