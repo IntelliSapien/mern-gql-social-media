@@ -1,4 +1,4 @@
-const { ApolloError } = require("apollo-server");
+const { ApolloError, AuthenticationError } = require("apollo-server");
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 const errorCodes = require("./error");
@@ -58,17 +58,14 @@ module.exports = {
     },
     deletePost: async (_, { id }, context) => {
       const user = validateToken(context);
-      try {
-        const post = await Post.findById(id).exec();
-        if (post._doc.username !== user.username) {
-          return false;
-        }
-        await Post.findByIdAndDelete(id);
-        return true;
-      } catch (err) {
-        console.error("🚀 ~ file: posts.js ~ line 39 ~ deletePost: ~ err", err);
-        throw new ApolloError(err);
+      const post = await Post.findById(id).exec();
+      if (post._doc.username !== user.username) {
+        throw new AuthenticationError(errorCodes.ACTION_NOT_ALLOWED, {
+          message: errorCodes.ACTION_NOT_ALLOWED,
+        });
       }
+      await Post.findByIdAndDelete(id);
+      return true;
     },
   },
 };
