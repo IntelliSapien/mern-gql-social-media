@@ -36,7 +36,7 @@ module.exports = {
   Mutation: {
     createPost: async (_, { body }, context) => {
       const user = validateToken(context);
-      console.log("🚀 ~ file: posts.js ~ line 33 ~ createPost: ~ user", user);
+
       let post;
       try {
         const userCreatingThePost = await User.findById(user.id).exec();
