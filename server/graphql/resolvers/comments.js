@@ -5,6 +5,8 @@ const errorCodes = require("./error");
 const mongoose = require("mongoose");
 const { validateToken } = require("../../utils/jwt");
 
+// TODO: Refactor the code to isolate the resolvers for the individual type
+
 module.exports = {
   Mutation: {
     createComment: async (_, { body, postId }, context) => {
@@ -54,7 +56,7 @@ module.exports = {
           message: errorCodes.ACTION_NOT_ALLOWED,
         });
       }
-      // !TODO: delete comment code
+      // TODO: delete comment code
       return {
         ...post._doc,
         id: post._id,

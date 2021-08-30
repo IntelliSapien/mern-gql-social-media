@@ -4,6 +4,9 @@ const User = require("../../models/User");
 const errorCodes = require("./error");
 const mongoose = require("mongoose");
 const { validateToken } = require("../../utils/jwt");
+
+// TODO: Refactor the code to isolate the resolvers for the individual type
+
 module.exports = {
   Query: {
     Posts: async (_, { id }, context) => {

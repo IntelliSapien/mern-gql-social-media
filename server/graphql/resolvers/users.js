@@ -9,6 +9,9 @@ const {
 } = require("../../utils/validators");
 const { generateToken } = require("../../utils/jwt");
 const errorCodes = require("./error");
+
+// TODO: Refactor the code to isolate the resolvers for the individual type
+
 module.exports = {
   Query: {
     Users: async (_, { id }, context) => {
