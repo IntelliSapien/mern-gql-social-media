@@ -13,7 +13,18 @@ const getAllUsers = async () => {
   return await User.find().exec();
 };
 
+const getUserByUserName = async ({ userName }) => {
+  return await User.findOne({ userName }).exec();
+};
+
+const createUser = async ({ user }) => {
+  const newUser = new User(user);
+  return await newUser.save();
+};
+
 module.exports = {
   getUserById,
   getAllUsers,
+  createUser,
+  getUserByUserName,
 };
