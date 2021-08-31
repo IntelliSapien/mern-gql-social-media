@@ -1,14 +1,14 @@
 const { UserInputError, ApolloError } = require("apollo-server");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
-const User = require("../../models/User");
-const { validateToken } = require("../../utils/jwt");
+const User = require("../models/User");
+const { validateToken } = require("../utils/jwt");
 const {
   validateRegisterInput,
   validateLoginInput,
-} = require("../../utils/validators");
-const { generateToken } = require("../../utils/jwt");
-const errorCodes = require("./error");
+} = require("../utils/validators");
+const { generateToken } = require("../utils/jwt");
+const errorCodes = require("../utils/error");
 module.exports = {
   Query: {
     Users: async (_, { id }, context) => {

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { AuthenticationError } = require("apollo-server");
 const { SECRET_KEY } = require("../config");
-const errorCodes = require("./../graphql/resolvers/error");
+const errorCodes = require("./error");
 module.exports.generateToken = function (user) {
   return jwt.sign(
     {
