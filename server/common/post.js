@@ -83,13 +83,64 @@ const createPostResolverFunction = async (_, { body }, context) => {
   }
 };
 
-const createCommentResolverFunction = async (
-  _,
-  { body, postId },
-  context
-) => {};
+const createCommentResolverFunction = async (_, { body, postId }, context) => {
+  const { id } = validateToken(context);
+  if (body.trim() === "") {
+    throw new UserInputError(errorCodes.COMMENT_CAN_NOT_BE_EMPTY, {
+      errors: {
+        body: "Comment body must not be empty",
+      },
+    });
+  }
+  const user = await getUserById({ id });
+  const post = await getPostById({ id: postId });
+  if (post) {
+    post.comments.unshift({
+      body,
+      user,
+      createdAt: new Date().toISOString(),
+    });
+    await post.save();
+  }
+  return {
+    ...post._doc,
+    id: post._id,
+    user,
+  };
+};
 
-const likePostResolverFunction = async (_, { id }, context) => {};
+const deleteCommentResolverFunction = async (
+  _,
+  { postId, commentId },
+  context
+) => {
+  const { id } = validateToken(context);
+  const user = await getUserById({ id });
+  const post = await getPostById({ id: postId });
+  if (post._doc.username !== user.username) {
+    throw new AuthenticationError(errorCodes.ACTION_NOT_ALLOWED, {
+      message: errorCodes.ACTION_NOT_ALLOWED,
+    });
+  }
+  // TODO Delete Comment Code
+  return {
+    ...post._doc,
+    id: post._id,
+    user,
+  };
+};
+
+const likePostResolverFunction = async (_, { postId }, context) => {
+  const { id } = validateToken(context);
+  const user = await getUserById({ id });
+  const post = await getPostById({ id: postId });
+  // TODO Like Post Code
+  return {
+    ...post._doc,
+    id: post._id,
+    user,
+  };
+};
 
 module.exports = {
   postByIdResolverFunction,
@@ -97,5 +148,6 @@ module.exports = {
   deletePostResolverFunction,
   createPostResolverFunction,
   createCommentResolverFunction,
+  deleteCommentResolverFunction,
   likePostResolverFunction,
 };

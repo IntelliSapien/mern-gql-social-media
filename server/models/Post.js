@@ -18,6 +18,10 @@ const PostSchema = new Schema(
     likes: [
       {
         createdAt: String,
+        likeType: {
+          type: String,
+          enum: ["LIKE", "DISLIKE"],
+        },
         user: {
           type: Schema.Types.ObjectId,
           ref: "users",
