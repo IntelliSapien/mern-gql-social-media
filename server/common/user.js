@@ -9,6 +9,7 @@ const { generateToken } = require("../utils/jwt");
 const { validateToken } = require("../utils/jwt");
 const { ApolloError } = require("apollo-server");
 const errorCodes = require("../utils/error");
+const { userResponseMapper } = require("../utils/user.mapper");
 const {
   validateRegisterInput,
   validateLoginInput,
@@ -16,20 +17,14 @@ const {
 
 const userResolver = async ({ id }) => {
   const user = await getUserById({ id });
-  return {
-    ...user._doc,
-    id: user._id,
-  };
+  return userResponseMapper({ user });
 };
 
 const userByIdResolverFunction = async (_, { id }, context) => {
   validateToken(context);
   try {
     const user = await getUserById({ id });
-    return {
-      ...user._doc,
-      id: user._id,
-    };
+    return userResponseMapper({ user });
   } catch (error) {
     console.log(
       "🚀 ~ file: user.js ~ line 21 ~ userByIdResolverFunction ~ error",
@@ -44,10 +39,7 @@ const allUsersResolverFunction = async (_, __, context) => {
   try {
     const users = await getAllUsers();
     return users.map((user) => {
-      return {
-        ...user._doc,
-        id: user._id,
-      };
+      return userResponseMapper({ user });
     });
   } catch (err) {
     console.log(
@@ -86,10 +78,7 @@ const registerUserResolverFunction = async (
     createdAt: new Date().toISOString(),
   };
   const user = await createUser({ user: newUser });
-  return {
-    ...user._doc,
-    id: user._id,
-  };
+  return userResponseMapper({ user });
 };
 const loginResolverFunction = async (
   _,
