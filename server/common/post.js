@@ -1,17 +1,28 @@
-const { ApolloError } = require("apollo-server");
+const {
+  ApolloError,
+  UserInputError,
+  AuthenticationError,
+} = require("apollo-server");
 const { postResponseMapper } = require("../utils/post.mapper");
 const {
   getAllPosts,
   getPostById,
   deletePostById,
   createPost,
+  filterPosts,
 } = require("../services/post.service");
 const { getUserById } = require("../services/user.service");
 const { validateToken } = require("../utils/jwt");
+const errorCodes = require("../utils/error");
 
 const postByIdResolverFunction = async (_, { id }, context) => {
   validateToken(context);
   const post = await getPostById({ id });
+  if (!post) {
+    throw new ApolloError(errorCodes.POST_NOT_FOUND, {
+      message: errorCodes.POST_NOT_FOUND,
+    });
+  }
   const user = await getUserById({ id: post.user });
   return postResponseMapper({ post, user });
 };
@@ -31,7 +42,7 @@ const deletePostResolverFunction = async (_, { id }, context) => {
   return true;
 };
 const createPostResolverFunction = async (_, { body }, context) => {
-  const user = validateToken(context);
+  const { id } = validateToken(context);
   if (body.trim() === "") {
     throw new UserInputError(errorCodes.POST_CANNOT_BE_EMPTY, {
       errors: {
@@ -40,6 +51,7 @@ const createPostResolverFunction = async (_, { body }, context) => {
     });
   }
   try {
+    const user = await getUserById({ id });
     const post = await createPost({ body, user });
     return postResponseMapper({ post, user });
   } catch (err) {
@@ -74,12 +86,15 @@ const deleteCommentResolverFunction = async (
   { postId, commentId },
   context
 ) => {
-  const user = validateToken(context);
+  const { id } = validateToken(context);
+  const user = await getUserById({ id });
   const post = await getPostById({ id: postId });
-  const commentToBeDeleted = post.comments.find(
-    (comment) => comment.id === commentId
+  const comment = post.comments.find(
+    (comment) =>
+      comment.id === commentId &&
+      JSON.parse(JSON.stringify(comment.user)) === id
   );
-  if (commentToBeDeleted && commentToBeDeleted.user.id !== user.id) {
+  if (!comment) {
     throw new AuthenticationError(errorCodes.ACTION_NOT_ALLOWED, {
       message: errorCodes.ACTION_NOT_ALLOWED,
     });
@@ -94,13 +109,23 @@ const deleteCommentResolverFunction = async (
 };
 
 const likePostResolverFunction = async (_, { postId, type }, context) => {
-  const user = validateToken(context);
+  const { id } = validateToken(context);
+  const user = await getUserById({ id });
   const post = await getPostById({ id: postId });
-  post.likes.push({
-    user,
-    createdAt: new Date().toISOString(),
-    type,
+  const existingLikes = post.likes.find((like) => {
+    return (
+      JSON.parse(JSON.stringify(like.user)) === id
+    );
   });
+  if (existingLikes) {
+    post.likes[post.likes.indexOf(existingLikes)]._doc.type = type;
+  } else {
+    post.likes.push({
+      user,
+      createdAt: new Date().toISOString(),
+      type,
+    });
+  }
   await post.save();
   return postResponseMapper({ post, user });
 };

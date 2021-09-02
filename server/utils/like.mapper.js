@@ -3,7 +3,7 @@ const likeResponseMapper = ({ like, user }) => {
   return {
     id: like.id,
     createdAt: like.createdAt,
-    type: like.type,
+    type: like._doc.type,
     user: userResponseMapper({ user }),
   };
 };

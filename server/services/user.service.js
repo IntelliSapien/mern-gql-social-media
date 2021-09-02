@@ -13,8 +13,8 @@ const getAllUsers = async () => {
   return await User.find().exec();
 };
 
-const getUserByUserName = async ({ userName }) => {
-  return await User.findOne({ userName }).exec();
+const getUserByUserName = async ({ username }) => {
+  return await User.findOne({ username }).exec();
 };
 
 const createUser = async ({ user }) => {

@@ -29,5 +29,5 @@ module.exports = {
   getPostById,
   getAllPosts,
   deletePostById,
-  createPost
+  createPost,
 };

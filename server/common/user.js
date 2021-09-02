@@ -7,7 +7,7 @@ const {
 } = require("../services/user.service");
 const { generateToken } = require("../utils/jwt");
 const { validateToken } = require("../utils/jwt");
-const { ApolloError } = require("apollo-server");
+const { ApolloError, UserInputError } = require("apollo-server");
 const errorCodes = require("../utils/error");
 const { userResponseMapper } = require("../utils/user.mapper");
 const {
@@ -17,32 +17,21 @@ const {
 
 const userByIdResolverFunction = async (_, { id }, context) => {
   validateToken(context);
-  try {
-    const user = await getUserById({ id });
+  const user = await getUserById({ id });
+  if (user) {
     return userResponseMapper({ user });
-  } catch (error) {
-    console.log(
-      "🚀 ~ file: user.js ~ line 21 ~ userByIdResolverFunction ~ error",
-      error
-    );
-    throw new ApolloError(error);
   }
+  throw new UserInputError(errorCodes.USER_NOT_FOUND, {
+    username: errorCodes.USER_NOT_FOUND,
+  });
 };
 
 const allUsersResolverFunction = async (_, __, context) => {
   validateToken(context);
-  try {
-    const users = await getAllUsers();
-    return users.map((user) => {
-      return userResponseMapper({ user });
-    });
-  } catch (err) {
-    console.log(
-      "🚀 ~ file: user.js ~ line 37 ~ allUsersResolverFunction ~ err",
-      err
-    );
-    throw new ApolloError(err);
-  }
+  const users = await getAllUsers();
+  return users.map((user) => {
+    return userResponseMapper({ user });
+  });
 };
 
 const registerUserResolverFunction = async (
