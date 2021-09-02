@@ -1,5 +1,9 @@
 const { gql } = require("apollo-server");
 module.exports = gql`
+  enum LikeType {
+    LIKE
+    DISLIKE
+  }
   input RegisterInput {
     username: String!
     password: String!
@@ -27,6 +31,7 @@ module.exports = gql`
 
   type Like {
     id: ID!
+    type: LikeType
     createdAt: String!
     user: User!
   }
@@ -54,6 +59,6 @@ module.exports = gql`
     deletePost(id: ID!): Boolean!
     createComment(body: String!, postId: ID!): Post!
     deleteComment(postId: ID!, commentId: ID!): Post!
-    likePost(postId: ID!): Post!
+    likePost(postId: ID!, likeType: LikeType): Post!
   }
 `;
