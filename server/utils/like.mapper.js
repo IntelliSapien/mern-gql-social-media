@@ -1,9 +1,10 @@
-const likeResponseMapper = ({ like, id }) => {
+const { userResponseMapper } = require("./user.mapper");
+const likeResponseMapper = ({ like, user }) => {
   return {
     id: like.id,
     createdAt: like.createdAt,
     type: like.type,
-    user: { id },
+    user: userResponseMapper({ user }),
   };
 };
 

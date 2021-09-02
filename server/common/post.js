@@ -8,36 +8,27 @@ const {
 } = require("../services/post.service");
 const { getUserById } = require("../services/user.service");
 const { validateToken } = require("../utils/jwt");
+
 const postByIdResolverFunction = async (_, { id }, context) => {
   validateToken(context);
-  try {
-    const post = await getPostById({ id });
-    return postResponseMapper({ post, id: post.user });
-  } catch (err) {
-    throw new ApolloError(err);
-  }
+  const post = await getPostById({ id });
+  const user = await getUserById({ id: post.user });
+  return postResponseMapper({ post, user });
 };
 
 const allPostsResolverFunction = async (_, __, context) => {
   validateToken(context);
-  try {
-    const posts = await getAllPosts();
-    return posts.map(async (post) => {
-      return postResponseMapper({ post, id: post.user });
-    });
-  } catch (err) {
-    throw new ApolloError(err);
-  }
+  const posts = await getAllPosts();
+  return posts.map(async (post) => {
+    const user = await getUserById({ id: post.user });
+    return postResponseMapper({ post, user });
+  });
 };
 
 const deletePostResolverFunction = async (_, { id }, context) => {
   validateToken(context);
-  try {
-    await deletePostById({ id });
-    return true;
-  } catch (err) {
-    throw new ApolloError(err);
-  }
+  await deletePostById({ id });
+  return true;
 };
 const createPostResolverFunction = async (_, { body }, context) => {
   const user = validateToken(context);
@@ -50,7 +41,7 @@ const createPostResolverFunction = async (_, { body }, context) => {
   }
   try {
     const post = await createPost({ body, user });
-    return postResponseMapper({ post, id: user.id });
+    return postResponseMapper({ post, user });
   } catch (err) {
     throw new ApolloError(err);
   }
@@ -75,7 +66,7 @@ const createCommentResolverFunction = async (_, { body, postId }, context) => {
     });
     await post.save();
   }
-  return postResponseMapper({ post, id: user.id });
+  return postResponseMapper({ post, user });
 };
 
 const deleteCommentResolverFunction = async (
@@ -99,20 +90,19 @@ const deleteCommentResolverFunction = async (
   );
   post.comments = updatedComments;
   await post.save();
-  return postResponseMapper({ post, id: user.id });
+  return postResponseMapper({ post, user });
 };
 
 const likePostResolverFunction = async (_, { postId, type }, context) => {
   const user = validateToken(context);
   const post = await getPostById({ id: postId });
-  // TODO Like Post Code
   post.likes.push({
     user,
     createdAt: new Date().toISOString(),
     type,
   });
   await post.save();
-  return postResponseMapper({ post, id: user.id });
+  return postResponseMapper({ post, user });
 };
 
 module.exports = {

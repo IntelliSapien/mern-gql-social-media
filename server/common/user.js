@@ -15,11 +15,6 @@ const {
   validateLoginInput,
 } = require("../utils/validators");
 
-const userResolver = async ({ id }) => {
-  const user = await getUserById({ id });
-  return userResponseMapper({ user });
-};
-
 const userByIdResolverFunction = async (_, { id }, context) => {
   validateToken(context);
   try {
@@ -117,5 +112,4 @@ module.exports = {
   allUsersResolverFunction,
   registerUserResolverFunction,
   loginResolverFunction,
-  userResolver,
 };
