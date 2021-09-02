@@ -1,4 +1,4 @@
-const errorCodes = require("../graphql/resolvers/error");
+const errorCodes = require("./error");
 module.exports.validateRegisterInput = (
   username,
   email,
