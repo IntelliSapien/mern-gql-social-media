@@ -4,7 +4,7 @@ const userResponseMapper = ({ user }) => {
         username: user.username,
         createdAt: user.createdAt,
         email: user.email,
-    }
-}
+    };
+};
 
-module.exports = { userResponseMapper }
+module.exports = { userResponseMapper };

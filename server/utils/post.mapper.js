@@ -1,6 +1,6 @@
-const { commentResponseMapper } = require('./comment.mapper')
-const { likeResponseMapper } = require('./like.mapper')
-const { userResponseMapper } = require('./user.mapper')
+const { commentResponseMapper } = require('./comment.mapper');
+const { likeResponseMapper } = require('./like.mapper');
+const { userResponseMapper } = require('./user.mapper');
 const postResponseMapper = ({ post, user }) => {
     return {
         id: post.id,
@@ -11,7 +11,7 @@ const postResponseMapper = ({ post, user }) => {
         ),
         likes: post.likes.map((like) => likeResponseMapper({ like, user })),
         user: userResponseMapper({ user }),
-    }
-}
+    };
+};
 
-module.exports = { postResponseMapper }
+module.exports = { postResponseMapper };

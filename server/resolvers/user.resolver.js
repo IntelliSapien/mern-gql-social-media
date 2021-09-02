@@ -3,7 +3,7 @@ const {
     userByIdResolverFunction,
     registerUserResolverFunction,
     loginResolverFunction,
-} = require('../common/user')
+} = require('../common/user');
 module.exports = {
     Query: {
         Users: allUsersResolverFunction,
@@ -13,4 +13,4 @@ module.exports = {
         register: registerUserResolverFunction,
         login: loginResolverFunction,
     },
-}
+};

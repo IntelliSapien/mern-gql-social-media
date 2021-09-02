@@ -1,4 +1,4 @@
-const { model, Schema } = require('mongoose')
+const { model, Schema } = require('mongoose');
 
 const UserSchema = new Schema(
     {
@@ -8,6 +8,6 @@ const UserSchema = new Schema(
         createdAt: String,
     },
     { strict: false }
-)
+);
 
-module.exports = model('User', UserSchema)
+module.exports = model('User', UserSchema);

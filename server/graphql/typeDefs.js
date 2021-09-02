@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server')
+const { gql } = require('apollo-server');
 module.exports = gql`
     enum LikeType {
         LIKE
@@ -61,4 +61,4 @@ module.exports = gql`
         deleteComment(postId: ID!, commentId: ID!): Post!
         likePost(postId: ID!, type: LikeType): Post!
     }
-`
+`;

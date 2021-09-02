@@ -6,7 +6,7 @@ const {
     createCommentResolverFunction,
     likePostResolverFunction,
     deleteCommentResolverFunction,
-} = require('../common/post')
+} = require('../common/post');
 module.exports = {
     Query: {
         Posts: allPostsResolverFunction,
@@ -19,4 +19,4 @@ module.exports = {
         deleteComment: deleteCommentResolverFunction,
         likePost: likePostResolverFunction,
     },
-}
+};
