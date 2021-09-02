@@ -9,7 +9,6 @@ const {
     getPostById,
     deletePostById,
     createPost,
-    filterPosts,
 } = require('../services/post.service');
 const { getUserById } = require('../services/user.service');
 const { validateToken } = require('../utils/jwt');
