@@ -85,7 +85,10 @@ const deleteCommentResolverFunction = async (
 ) => {
   const user = validateToken(context);
   const post = await getPostById({ id: postId });
-  if (post._doc.username !== user.username) {
+  const commentToBeDeleted = post.comments.find(
+    (comment) => comment.id === commentId
+  );
+  if (commentToBeDeleted && commentToBeDeleted.user.id !== user.id) {
     throw new AuthenticationError(errorCodes.ACTION_NOT_ALLOWED, {
       message: errorCodes.ACTION_NOT_ALLOWED,
     });
@@ -99,10 +102,16 @@ const deleteCommentResolverFunction = async (
   return postResponseMapper({ post, id: user.id });
 };
 
-const likePostResolverFunction = async (_, { postId }, context) => {
+const likePostResolverFunction = async (_, { postId, type }, context) => {
   const user = validateToken(context);
   const post = await getPostById({ id: postId });
   // TODO Like Post Code
+  post.likes.push({
+    user,
+    createdAt: new Date().toISOString(),
+    type,
+  });
+  await post.save();
   return postResponseMapper({ post, id: user.id });
 };
 
