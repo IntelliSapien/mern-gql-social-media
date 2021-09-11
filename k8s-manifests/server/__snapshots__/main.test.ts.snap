@@ -1,3 +1,113 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Placeholder Empty 1`] = `Array []`;
+
+exports[`mern-gql-server-config Generate mern-gql-server-config 1`] = `
+Array [
+  Object {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": Object {
+      "name": "mern-gql-server-deployment-c8f74d56",
+      "namespace": "mern-gql",
+    },
+    "spec": Object {
+      "selector": Object {
+        "matchLabels": Object {
+          "app": "merngqlserver7627D0B4",
+        },
+      },
+      "template": Object {
+        "metadata": Object {
+          "labels": Object {
+            "app": "merngqlserver7627D0B4",
+          },
+        },
+        "spec": Object {
+          "containers": Array [
+            Object {
+              "image": "abhiit89/mern-gql:latest",
+              "imagePullPolicy": "Always",
+              "name": "app",
+              "ports": Array [
+                Object {
+                  "containerPort": 8080,
+                },
+              ],
+              "resources": Object {
+                "limits": Object {
+                  "cpu": "400m",
+                  "memory": "512Mi",
+                },
+                "requests": Object {
+                  "cpu": "200m",
+                  "memory": "256Mi",
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+  Object {
+    "apiVersion": "autoscaling/v2beta2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": Object {
+      "name": "mern-gql-server-deployment-hpa-c893cb13",
+      "namespace": "mern-gql",
+    },
+    "spec": Object {
+      "maxReplicas": 10,
+      "metrics": Array [
+        Object {
+          "resource": Object {
+            "name": "cpu",
+            "target": Object {
+              "averageUtilization": 85,
+              "type": "Utilization",
+            },
+          },
+          "type": "Resource",
+        },
+        Object {
+          "resource": Object {
+            "name": "memory",
+            "target": Object {
+              "averageUtilization": 75,
+              "type": "Utilization",
+            },
+          },
+          "type": "Resource",
+        },
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": Object {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "mern-gql-server-deployment-c8f74d56",
+      },
+    },
+  },
+  Object {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": Object {
+      "name": "mern-gql-server-exposable-service-c8ae1813",
+      "namespace": "mern-gql",
+    },
+    "spec": Object {
+      "ports": Array [
+        Object {
+          "port": 80,
+          "targetPort": 8080,
+        },
+      ],
+      "selector": Object {
+        "app": "merngqlserver7627D0B4",
+      },
+      "type": "ClusterIP",
+    },
+  },
+]
+`;

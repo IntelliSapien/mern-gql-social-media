@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "cdk8s": "^1.0.0-beta.30",
+    "cdk8s-debore": "^0.1.1",
     "cdk8s-plus-17": "^1.0.0-beta.57",
     "constructs": "^3.3.147"
   },
