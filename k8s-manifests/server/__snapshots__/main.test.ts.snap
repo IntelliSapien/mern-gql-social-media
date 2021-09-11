@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Placeholder Empty 1`] = `Array []`;
-
 exports[`mern-gql-server-config Generate mern-gql-server-config 1`] = `
 Array [
   Object {
@@ -31,7 +29,7 @@ Array [
               "name": "app",
               "ports": Array [
                 Object {
-                  "containerPort": 8080,
+                  "containerPort": 4000,
                 },
               ],
               "resources": Object {
@@ -100,7 +98,7 @@ Array [
       "ports": Array [
         Object {
           "port": 80,
-          "targetPort": 8080,
+          "targetPort": 4000,
         },
       ],
       "selector": Object {
