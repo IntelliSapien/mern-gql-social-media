@@ -9,7 +9,6 @@ export class MyChart extends Chart {
       image: "abhiit89/mern-gql:latest",
       autoScale: true,
       defaultReplicas: 1,
-      namespace: "mern-gql",
       ingress: IngressType.CLUSTER_IP,
       containerPort: 4000,
     });
