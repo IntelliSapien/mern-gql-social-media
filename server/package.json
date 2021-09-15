@@ -4,7 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon index.js",
+        "dev": "nodemon index.js",
+        "prod": "node index.js",
+        "postinstall": "npm run pretty-fix",
         "pretty": "prettier --check .",
         "pretty-fix": "prettier --write ."
     },

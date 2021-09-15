@@ -1,2 +1,7 @@
 server/node_modules
 server/.env
+k8s-manifests/server/*.js
+k8s-manifests/server/*.d.ts
+k8s-manifests/server/!jest.config.js
+k8s-manifests/server/node_modules
+k8s-manifests/server/dist/
